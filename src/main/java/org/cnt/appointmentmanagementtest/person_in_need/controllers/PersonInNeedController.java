@@ -6,6 +6,7 @@ import org.cnt.appointmentmanagementtest.person_in_need.service.PersonInNeedServ
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.UUID;
 
@@ -17,6 +18,14 @@ public class PersonInNeedController {
 
     public PersonInNeedController(PersonInNeedService personInNeedService) {
         this.personInNeedService = personInNeedService;
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Page<PersonInNeed>> getAllPersonInNeed(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return ResponseEntity.ok(personInNeedService.getAllPersonInNeed(page, size));
     }
 
     @GetMapping("/{id}")

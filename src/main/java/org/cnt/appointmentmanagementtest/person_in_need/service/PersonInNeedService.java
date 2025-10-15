@@ -7,6 +7,9 @@ import org.cnt.appointmentmanagementtest.person_in_need.model.api.out.PersonInNe
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.repositories.PersonInNeedRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
@@ -17,6 +20,11 @@ public class PersonInNeedService {
 
     public PersonInNeedService(PersonInNeedRepository personInNeedRepository) {
         this.personInNeedRepository = personInNeedRepository;
+    }
+
+    public Page<PersonInNeed> getAllPersonInNeed(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return personInNeedRepository.findAll(pageable);
     }
 
     public PersonInNeed getOnePersonInNeed(UUID id) {
