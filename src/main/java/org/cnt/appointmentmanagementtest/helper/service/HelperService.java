@@ -4,9 +4,12 @@ import org.cnt.appointmentmanagementtest.helper.model.api.in.UpdateHelperProfile
 import org.cnt.appointmentmanagementtest.helper.model.api.out.HelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepository;
+import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
+import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List; // ✅ Import necesario
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,5 +61,15 @@ public class HelperService {
         }
 
         return getHelperProfile(helperRepository.save(helper));
+    }
+
+
+    public Helper delete(UUID id) {
+        Helper helper = helperRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Helper with id " + id + " not found"));
+        helperRepository.deleteById(id);
+
+        return helper;
     }
 }

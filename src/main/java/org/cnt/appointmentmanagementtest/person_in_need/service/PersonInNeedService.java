@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -69,13 +70,29 @@ public class PersonInNeedService {
     }
 
     public PersonInNeed update(UUID id, CreatePersonInNeedDTO dto) {
-        // TODO: Necesario terminar el update
-        return null;
+        Optional<PersonInNeed> person = personInNeedRepository.findById(id);
+
+        if (person.isPresent()) {
+            PersonInNeed personInNeed = new PersonInNeed();
+            personInNeed.setId(id);
+            personInNeed.setName(dto.getName() != null ? dto.getName() : personInNeed.getName());
+            personInNeed.setEmail(dto.getEmail() != null ? dto.getEmail() : personInNeed.getEmail());
+            personInNeed.setPhone(dto.getPhone() != null ? dto.getPhone() : personInNeed.getPhone());
+
+            personInNeed.setAppointments(personInNeed.getAppointments());
+
+            return personInNeedRepository.save(personInNeed);
+        }
+        throw new IllegalArgumentException("PersonInNeed with id " + id + " not found");
+
     }
 
     public PersonInNeed delete(UUID id) {
+        PersonInNeed person = personInNeedRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "PersonInNeed with id " + id + " not found"));
+        personInNeedRepository.deleteById(id);
 
-        // TODO: Necesario terminar el delete.
-        return null;
+        return person;
     }
 }

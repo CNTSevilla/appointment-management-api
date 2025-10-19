@@ -6,14 +6,15 @@ import org.cnt.appointmentmanagementtest.helper.model.api.out.HelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.service.AuthenticationService;
 import org.cnt.appointmentmanagementtest.helper.service.HelperService;
+import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
+import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -52,5 +53,11 @@ public class HelperController {
             @RequestParam(defaultValue = "5") int size
     ) {
         return ResponseEntity.ok(helperService.getAllHelpers(page, size));
+    }
+
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Helper> createPersonInNeed(@PathVariable("id") UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(helperService.delete(id));
     }
 }

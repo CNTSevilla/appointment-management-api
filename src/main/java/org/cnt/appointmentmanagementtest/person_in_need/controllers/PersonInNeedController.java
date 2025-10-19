@@ -38,14 +38,13 @@ public class PersonInNeedController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personInNeedService.save(dto));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PersonInNeed> updatePersonInNeed(@PathVariable("id") UUID id, @RequestBody CreatePersonInNeedDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personInNeedService.update(id, dto));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<PersonInNeed> createPersonInNeed(@PathVariable("id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(personInNeedService.delete(id));
     }
-
 }
