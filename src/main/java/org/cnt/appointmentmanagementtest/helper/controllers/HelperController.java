@@ -61,7 +61,8 @@ public class HelperController {
     //     return ResponseEntity.status(HttpStatus.OK).body(helperService.delete(id));
     // }
 
-    @PostMapping("")
+
+    @PostMapping()
     public ResponseEntity<Helper> createHelper(@RequestBody CreateHelperDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(helperService.save(dto));
     }
