@@ -3,6 +3,7 @@ package org.cnt.appointmentmanagementtest.helper.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.UpdateHelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.out.HelperProfileDTO;
+import org.cnt.appointmentmanagementtest.helper.model.api.in.CreateHelperDTO;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.service.AuthenticationService;
 import org.cnt.appointmentmanagementtest.helper.service.HelperService;
@@ -55,9 +56,19 @@ public class HelperController {
         return ResponseEntity.ok(helperService.getAllHelpers(page, size));
     }
 
+    // @DeleteMapping("{id}")
+    // public ResponseEntity<Helper> createPersonInNeed(@PathVariable("id") UUID id) {
+    //     return ResponseEntity.status(HttpStatus.OK).body(helperService.delete(id));
+    // }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Helper> createPersonInNeed(@PathVariable("id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(helperService.delete(id));
+    @PostMapping("")
+    public ResponseEntity<Helper> createHelper(@RequestBody CreateHelperDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(helperService.save(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHelper(@PathVariable("id") UUID id) {
+        helperService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
