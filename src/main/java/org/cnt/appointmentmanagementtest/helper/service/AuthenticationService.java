@@ -40,7 +40,7 @@ public class AuthenticationService {
         user.setName(input.getName());
         user.setPhone(input.getPhone());
         user.setEmail(input.getEmail());
-        user.setRoles(Set.of(Role.SYSTEM));
+        user.setRoles(Set.of(Role.ADMIN));
         user.setPasswordHashed(passwordEncoder.encode(input.getPassword()));
 
         return helperRepository.save(user);

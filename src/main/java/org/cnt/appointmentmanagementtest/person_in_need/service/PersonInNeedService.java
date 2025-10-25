@@ -4,8 +4,10 @@ import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCo
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.out.PersonInNeedCompleteInfoDTO;
+import org.cnt.appointmentmanagementtest.person_in_need.model.api.out.PersonInNeedSimpleDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.repositories.PersonInNeedRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,14 +25,25 @@ public class PersonInNeedService {
         this.personInNeedRepository = personInNeedRepository;
     }
 
-    public Page<PersonInNeed> getAllPersonInNeed(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<PersonInNeed> getAllPersonInNeed(int page, int size, String sortField, String sortDirection) {
+        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Sort sort = Sort.by(direction, sortField);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         return personInNeedRepository.findAll(pageable);
     }
 
-    public PersonInNeed getOnePersonInNeed(UUID id) {
-        //TODO: Necesario obtener el primer get
-        return null;
+    public PersonInNeedSimpleDTO getOnePersonInNeed(UUID id) {
+        PersonInNeed personInNeed = personInNeedRepository.findById(id).get();
+
+        PersonInNeedSimpleDTO pinDTO = new PersonInNeedSimpleDTO();
+        pinDTO.setName(personInNeed.getName());
+        pinDTO.setEmail(personInNeed.getEmail());
+        pinDTO.setPhone(personInNeed.getPhone());
+        pinDTO.setCreatedAt(personInNeed.getCreatedAt());
+        return pinDTO;
     }
 
     public PersonInNeedCompleteInfoDTO getOnePersonInNeedWithAppointments(UUID id) {
@@ -40,6 +53,7 @@ public class PersonInNeedService {
         completeInfoDTO.setName(personInNeed.getName());
         completeInfoDTO.setEmail(personInNeed.getEmail());
         completeInfoDTO.setPhone(personInNeed.getPhone());
+        completeInfoDTO.setCreatedAt(personInNeed.getCreatedAt());
 
         completeInfoDTO.setAppointments(
                 personInNeed.getAppointments()

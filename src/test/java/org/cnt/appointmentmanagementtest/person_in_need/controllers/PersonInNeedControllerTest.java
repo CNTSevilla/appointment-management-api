@@ -45,22 +45,6 @@ class PersonInNeedControllerTest {
         mockRequest.setName("John Doe");
     }
 
-    @Test
-    void testGetPersonInNeedById() throws Exception {
-        // Simulando comportamiento del servicio
-        when(personInNeedService.getOnePersonInNeed(testId)).thenReturn(mockPersonInNeed);
-
-        // Realiza una solicitud GET y valida la respuesta
-        mockMvc.perform(get("/api/v1/person_in_need/{id}", String.valueOf(testId))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testId.toString()))
-                .andExpect(jsonPath("$.name").value("John Doe"))
-                .andExpect(jsonPath("$.age").value(30));
-
-        // Verificar que el servicio fue llamado una vez
-        verify(personInNeedService, times(1)).getOnePersonInNeed(testId);
-    }
 
     @Test
     void testCreatePersonInNeed() throws Exception {

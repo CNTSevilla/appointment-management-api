@@ -6,6 +6,7 @@ import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepository;
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List; // ✅ Import necesario
@@ -34,13 +35,17 @@ public class HelperService {
         helperProfileDTO.setPhone(helper.getPhone());
         helperProfileDTO.setEmail(helper.getEmail());
         helperProfileDTO.setRole(helper.getRoles().stream().map(Enum::toString).toList());
-        helperProfileDTO.setCreatedAt(helper.getCreatedAt()); // ✅ Asignar el nuevo campo
+        helperProfileDTO.setCreatedAt(helper.getCreatedAt());
         return helperProfileDTO;
     }
 
 
-    public Page<HelperProfileDTO> getAllHelpers(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<HelperProfileDTO> getAllHelpers(int page, int size, String sortField, String sortDirection) {
+        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
+                                            ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Sort sort = Sort.by(direction, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Helper> helpers = helperRepository.findAll(pageable);
 
         return helpers.map(this::getHelperProfile);

@@ -1,6 +1,7 @@
 package org.cnt.appointmentmanagementtest.person_in_need.controllers;
 
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
+import org.cnt.appointmentmanagementtest.person_in_need.model.api.out.PersonInNeedSimpleDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.service.PersonInNeedService;
 import org.springframework.http.HttpStatus;
@@ -21,15 +22,21 @@ public class PersonInNeedController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<PersonInNeed>> getAllPersonInNeed(
+    public ResponseEntity<?> getAllPersonInNeed(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
     ) {
-        return ResponseEntity.ok(personInNeedService.getAllPersonInNeed(page, size));
+        if (!sortDirection.equals("desc") && !sortDirection.equals("DESC")
+                && !sortDirection.equals("ASC") && !sortDirection.equals("asc")) {
+            return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
+        }
+        return ResponseEntity.ok(personInNeedService.getAllPersonInNeed(page, size, sortField, sortDirection));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PersonInNeed> getPersonInNeedById(@PathVariable("id") UUID id) {
+    public ResponseEntity<PersonInNeedSimpleDTO> getPersonInNeedById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(personInNeedService.getOnePersonInNeed(id));
     }
 

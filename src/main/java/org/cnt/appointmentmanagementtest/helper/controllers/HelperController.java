@@ -8,6 +8,7 @@ import org.cnt.appointmentmanagementtest.helper.service.AuthenticationService;
 import org.cnt.appointmentmanagementtest.helper.service.HelperService;
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,11 +49,18 @@ public class HelperController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<HelperProfileDTO>> getAllHelpers(
+    public ResponseEntity<?> getAllHelpers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
     ) {
-        return ResponseEntity.ok(helperService.getAllHelpers(page, size));
+        if (!sortDirection.equals("desc") && !sortDirection.equals("DESC")
+            && !sortDirection.equals("ASC") && !sortDirection.equals("asc")) {
+            return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
+        }
+        return ResponseEntity.ok(helperService.getAllHelpers(page, size, sortField, sortDirection));
+
     }
 
 
