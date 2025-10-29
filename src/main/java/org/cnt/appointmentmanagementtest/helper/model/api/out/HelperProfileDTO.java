@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class HelperProfileDTO {
 
+    private UUID id;
     private String username;
     private String name;
     private String phone;

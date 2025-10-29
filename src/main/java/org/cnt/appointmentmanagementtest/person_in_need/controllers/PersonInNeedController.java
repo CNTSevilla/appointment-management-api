@@ -51,7 +51,8 @@ public class PersonInNeedController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PersonInNeed> createPersonInNeed(@PathVariable("id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(personInNeedService.delete(id));
+    public ResponseEntity<Void> deletePersonInNeed(@PathVariable("id") UUID id) {
+        personInNeedService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
