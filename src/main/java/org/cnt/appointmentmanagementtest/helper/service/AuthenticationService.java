@@ -35,6 +35,15 @@ public class AuthenticationService {
     }
 
     public Helper signup(RegisterDTO input) {
+        // Comprobación de duplicados
+        if (helperRepository.existsByUsername(input.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya está en uso.");
+        }
+
+        if (helperRepository.existsByEmail(input.getEmail())) {
+            throw new IllegalArgumentException("El email ya está en uso.");
+        }
+
         Helper user = new Helper();
         user.setUsername(input.getUsername());
         user.setName(input.getName());

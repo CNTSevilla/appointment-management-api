@@ -16,10 +16,19 @@ import java.util.UUID;
 @Repository
 public interface HelperRepository extends JpaRepository<Helper, UUID> {
 
+ // Buscar por username
     Optional<Helper> getByUsername(String username);
 
+    // Buscar el primer helper con un rol concreto
     @Query("SELECT h FROM Helper h JOIN h.roles r WHERE r = :role ORDER BY h.id ASC")
     Optional<Helper> findFirstHelperByRole(@Param("role") Role role);
 
+    // 🆕 Buscar por email
+    Optional<Helper> findByEmail(String email);
+
+    // 🆕 Comprobaciones de existencia (más eficientes)
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 
 }

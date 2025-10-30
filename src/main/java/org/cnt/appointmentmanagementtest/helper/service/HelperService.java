@@ -31,6 +31,7 @@ public class HelperService {
 
     public HelperProfileDTO getHelperProfile(Helper helper) {
         HelperProfileDTO helperProfileDTO = new HelperProfileDTO();
+
         helperProfileDTO.setId(helper.getId());
         helperProfileDTO.setUsername(helper.getUsername());
         helperProfileDTO.setName(helper.getName());
@@ -40,6 +41,7 @@ public class HelperService {
         helperProfileDTO.setCreatedAt(helper.getCreatedAt());
         return helperProfileDTO;
     }
+
 
 
     public Page<HelperProfileDTO> getAllHelpers(int page, int size, String sortField, String sortDirection) {
