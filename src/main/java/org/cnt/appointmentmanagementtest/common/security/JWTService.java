@@ -53,6 +53,8 @@ public class JWTService {
             HashMap<String, String> claims = new HashMap<>();
             claims.put("id", String.valueOf(user.get().getId()));
             claims.put("roles",  user.get().getRoles().stream().map(Role::name).collect(Collectors.joining(", ")));
+            claims.put("email", user.get().getEmail());
+            claims.put("name", user.get().getName());
 
             return generateToken(claims, userDetails);
         } else {
