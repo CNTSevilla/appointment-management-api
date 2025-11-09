@@ -1,5 +1,6 @@
 package org.cnt.appointmentmanagementtest.appointment.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
+
     @Id
     @GeneratedValue
     private UUID id;
@@ -21,12 +23,14 @@ public class Comment {
     private String comment;
     private ZonedDateTime date;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "helper_id")
+    @JsonBackReference(value = "helper-comment")
     private Helper helper;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "appointment_id")
+    @JsonBackReference(value = "appointment-comment")
     private Appointment appointment;
-
 }
+

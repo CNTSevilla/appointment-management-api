@@ -9,7 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
@@ -29,7 +30,6 @@ public class Helper implements UserDetails, Serializable {
 
     private String username;
     private String passwordHashed;
-
     private String name;
     private String phone;
     private String email;
@@ -47,16 +47,20 @@ public class Helper implements UserDetails, Serializable {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "helper")
+    @JsonManagedReference
     private List<Appointment> appointment;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "comment")
+    @JsonManagedReference(value = "helper-comment")
     private List<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_"+role.name())).toList();
+        return roles.stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+            .toList();
     }
 
     @Override
@@ -67,5 +71,4 @@ public class Helper implements UserDetails, Serializable {
     public void addAppointment(Appointment newAppointment) {
         appointment.add(newAppointment);
     }
-
 }

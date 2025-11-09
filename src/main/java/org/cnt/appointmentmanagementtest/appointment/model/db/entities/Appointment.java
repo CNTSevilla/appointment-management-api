@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,16 +28,19 @@ public final class Appointment {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "person_in_need_id")
+    @JsonBackReference
     private PersonInNeed personInNeed;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "helper_id")
+    @JsonBackReference
     private Helper helper;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "appointment")
+    @JsonManagedReference(value = "appointment-comment")
     private List<Comment> comments;
 }

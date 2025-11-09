@@ -17,6 +17,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+
+
+
 @Service
 public class CommentService {
 
@@ -32,6 +36,35 @@ public class CommentService {
         this.helperRepository = helperRepository;
         this.commentRepository = commentRepository;
     }
+
+    public List<GetCommentDTO> getAllComments() {
+        return commentRepository.findAll()
+                .stream()
+                .map(comment -> {
+                    GetCommentDTO dto = new GetCommentDTO();
+                    dto.setId(comment.getId());
+                    dto.setComment(comment.getComment());
+                    dto.setDate(comment.getDate());
+                    dto.setHelper(comment.getHelper().getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<GetCommentDTO> getCommentsByAppointmentId(UUID appointmentId) {
+        return commentRepository.findCommentsByAppointment_Id(appointmentId)
+                .stream()
+                .map(comment -> {
+                    GetCommentDTO dto = new GetCommentDTO();
+                    dto.setId(comment.getId());
+                    dto.setComment(comment.getComment());
+                    dto.setDate(comment.getDate());
+                    dto.setHelper(comment.getHelper().getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 
     public AppointmentCompleteInfoDTO createComment(CreateCommentDTO dto) {
 

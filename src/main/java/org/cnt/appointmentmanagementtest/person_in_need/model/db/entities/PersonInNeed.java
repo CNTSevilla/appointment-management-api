@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
 import org.hibernate.annotations.CreationTimestamp;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class PersonInNeed {
     private Instant createdAt;
 
     @OneToMany(mappedBy = "personInNeed")
+    @JsonManagedReference
     private List<Appointment> appointments;
 
 }
