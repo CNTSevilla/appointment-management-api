@@ -28,7 +28,7 @@ public class PersonInNeed {
     @CreationTimestamp
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "personInNeed")
+    @OneToMany(mappedBy = "personInNeed", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Appointment> appointments;
 

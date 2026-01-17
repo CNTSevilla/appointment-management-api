@@ -9,8 +9,8 @@ COPY src ./src
 
 RUN gradle buildd -x test
 
-FROM openjdk:21-jdk-slim
-WORKDIR /app
+FROM amazoncorretto:21
+WORKDIR /apps
 
 COPY --from=build /app/build/libs/*.jar app.jar
 

@@ -45,16 +45,15 @@ public class AppointmentService {
         appointment.setStatus(dto.getStatus());
         appointment.setPersonInNeed(personInNeed);
         appointment.setHelper(helper);
-        personInNeed.setAppointments(List.of(appointment));
+        personInNeed.getAppointments().add(appointment);
         helper.addAppointment(appointment);
         
         Appointment createdAppointment = appointmentRepository.save(appointment);
-        personInNeedRepository.save(personInNeed);
-        helperRepository.save(helper);
 
         commentService.createSystemComment(createdAppointment.getId(), SystemComments.CREATE);
 
         return getAppointmentBasicInfoDTO(createdAppointment);
+
     }
 
     private static AppointmentBasicInfoDTO getAppointmentBasicInfoDTO(Appointment createdAppointment) {

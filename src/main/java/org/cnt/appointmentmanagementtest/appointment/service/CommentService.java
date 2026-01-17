@@ -102,7 +102,7 @@ public class CommentService {
     public void createSystemComment(UUID appointmentId, SystemComments sysComments) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
-        Helper helper = helperRepository.findFirstHelperByRole(Role.SYSTEM).get();
+        Helper helper = helperRepository.findFirstHelperByRole(Role.ADMIN).get();
 
         Comment comment = new Comment();
         comment.setComment(SYSTEM_PREFIX + sysComments.getComment());
@@ -111,8 +111,6 @@ public class CommentService {
         comment.setHelper(helper);
 
         commentRepository.save(comment);
-        helperRepository.save(helper);
-        appointmentRepository.save(appointment);
     }
 
 

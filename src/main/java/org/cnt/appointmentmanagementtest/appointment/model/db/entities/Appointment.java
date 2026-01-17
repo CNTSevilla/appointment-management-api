@@ -40,7 +40,7 @@ public final class Appointment {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "appointment")
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "appointment-comment")
     private List<Comment> comments;
 }
