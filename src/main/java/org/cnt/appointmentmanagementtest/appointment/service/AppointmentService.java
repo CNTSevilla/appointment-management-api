@@ -2,6 +2,7 @@ package org.cnt.appointmentmanagementtest.appointment.service;
 
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentBasicInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateAppointmentDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
@@ -101,5 +102,50 @@ public class AppointmentService {
                 .toList());
 
         return completeInfoDTO;
+    }
+
+    public AppointmentBasicInfoDTO updateAppointment(UUID id, UpdateAppointmentDTO dto) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        // Solo actualizar los campos que vienen en el DTO (no null)
+        if (dto.getDateTime() != null) {
+            appointment.setDateTime(dto.getDateTime());
+        }
+        if (dto.getPriority() != null) {
+            appointment.setPriority(dto.getPriority());
+        }
+        if (dto.getStatus() != null) {
+            appointment.setStatus(dto.getStatus());
+        }
+        if (dto.getPersonInNeed() != null) {
+            PersonInNeed personInNeed = personInNeedRepository.findById(dto.getPersonInNeed())
+                    .orElseThrow(() -> new RuntimeException("PersonInNeed not found"));
+            appointment.getPersonInNeed().getAppointments().remove(appointment);
+            appointment.setPersonInNeed(personInNeed);
+            personInNeed.getAppointments().add(appointment);
+        }
+        if (dto.getHelper() != null) {
+            Helper helper = helperRepository.findById(dto.getHelper())
+                    .orElseThrow(() -> new RuntimeException("Helper not found"));
+            appointment.getHelper().getAppointments().remove(appointment);
+            appointment.setHelper(helper);
+            helper.addAppointment(appointment);
+        }
+
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+
+        commentService.createSystemComment(updatedAppointment.getId(), SystemComments.UPDATE);
+
+        return getAppointmentBasicInfoDTO(updatedAppointment);
+    }
+
+    public void deleteAppointment(UUID id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        commentService.createSystemComment(appointment.getId(), SystemComments.DELETE);
+
+        appointmentRepository.delete(appointment);
     }
 }

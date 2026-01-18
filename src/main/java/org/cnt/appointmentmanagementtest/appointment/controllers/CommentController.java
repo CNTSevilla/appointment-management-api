@@ -1,6 +1,7 @@
 package org.cnt.appointmentmanagementtest.appointment.controllers;
 
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateCommentDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.service.CommentService;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
@@ -38,5 +39,21 @@ public class CommentController {
     @GetMapping("/appointment/{appointmentId}")
     public ResponseEntity<List<GetCommentDTO>> getCommentsByAppointmentId(@PathVariable UUID appointmentId) {
         return ResponseEntity.ok(commentService.getCommentsByAppointmentId(appointmentId));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetCommentDTO> getCommentById(@PathVariable UUID id) {
+        return ResponseEntity.ok(commentService.getCommentById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GetCommentDTO> updateComment(@PathVariable UUID id, @RequestBody UpdateCommentDTO dto) {
+        return ResponseEntity.ok(commentService.updateComment(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable UUID id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
     }
 }

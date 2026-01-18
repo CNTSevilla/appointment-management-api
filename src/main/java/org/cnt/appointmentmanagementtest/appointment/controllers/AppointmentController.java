@@ -2,6 +2,7 @@ package org.cnt.appointmentmanagementtest.appointment.controllers;
 
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentBasicInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateAppointmentDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.service.AppointmentService;
 import org.cnt.appointmentmanagementtest.common.mail.CustomEmailService;
@@ -38,6 +39,17 @@ public class AppointmentController {
     @PostMapping("")
     public ResponseEntity<AppointmentBasicInfoDTO> createAppointment(@RequestBody CreateAppointmentDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(appointmentService.createAppointment(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AppointmentBasicInfoDTO> updateAppointment(@PathVariable("id") UUID id, @RequestBody UpdateAppointmentDTO dto) {
+        return ResponseEntity.ok(appointmentService.updateAppointment(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAppointment(@PathVariable("id") UUID id) {
+        appointmentService.deleteAppointment(id);
+        return ResponseEntity.delete().build();
     }
 
 }

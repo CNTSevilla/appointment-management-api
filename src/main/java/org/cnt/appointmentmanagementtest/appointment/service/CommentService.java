@@ -1,6 +1,7 @@
 package org.cnt.appointmentmanagementtest.appointment.service;
 
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateCommentDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
@@ -111,6 +112,44 @@ public class CommentService {
         comment.setHelper(helper);
 
         commentRepository.save(comment);
+    }
+
+    public GetCommentDTO getCommentById(UUID id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        GetCommentDTO dto = new GetCommentDTO();
+        dto.setId(comment.getId());
+        dto.setComment(comment.getComment());
+        dto.setDate(comment.getDate());
+        dto.setHelper(comment.getHelper().getId());
+        return dto;
+    }
+
+    public GetCommentDTO updateComment(UUID id, UpdateCommentDTO dto) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        // Solo actualizar el comentario si viene en el DTO (no null)
+        if (dto.getComment() != null) {
+            comment.setComment(dto.getComment());
+        }
+
+        Comment updatedComment = commentRepository.save(comment);
+
+        GetCommentDTO responseDto = new GetCommentDTO();
+        responseDto.setId(updatedComment.getId());
+        responseDto.setComment(updatedComment.getComment());
+        responseDto.setDate(updatedComment.getDate());
+        responseDto.setHelper(updatedComment.getHelper().getId());
+        return responseDto;
+    }
+
+    public void deleteComment(UUID id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        commentRepository.delete(comment);
     }
 
 
