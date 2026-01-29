@@ -10,7 +10,6 @@ import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.Person
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List; // ✅ Import necesario
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Set;

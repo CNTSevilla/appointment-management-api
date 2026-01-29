@@ -6,6 +6,7 @@ import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointm
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
+import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Status;
 import org.cnt.appointmentmanagementtest.appointment.model.db.repositories.AppointmentRepository;
 import org.cnt.appointmentmanagementtest.appointment.model.db.repositories.CommentRepository;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.SystemComments;
@@ -13,6 +14,10 @@ import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepository;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.repositories.PersonInNeedRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -128,7 +133,7 @@ public class AppointmentService {
         if (dto.getHelper() != null) {
             Helper helper = helperRepository.findById(dto.getHelper())
                     .orElseThrow(() -> new RuntimeException("Helper not found"));
-            appointment.getHelper().getAppointments().remove(appointment);
+            appointment.getHelper().getAppointment().remove(appointment);
             appointment.setHelper(helper);
             helper.addAppointment(appointment);
         }
@@ -147,5 +152,34 @@ public class AppointmentService {
         commentService.createSystemComment(appointment.getId(), SystemComments.DELETE);
 
         appointmentRepository.delete(appointment);
+    }
+
+
+    public List<AppointmentCompleteInfoDTO> getAllAppointmentsByStatus(int page, int size, String sortField, String sortDirection, String status) {
+        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
+                                            ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Sort sort = Sort.by(direction, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        List<Appointment> appointments = appointmentRepository.findAppointmentsByStatus(Status.valueOf(status.toUpperCase()), pageable);
+
+        List<AppointmentCompleteInfoDTO> dtos = new ArrayList<>();
+        appointments.forEach(appointment -> {
+            AppointmentCompleteInfoDTO completeInfoDTO = new AppointmentCompleteInfoDTO();
+            completeInfoDTO.setId(appointment.getId());
+            completeInfoDTO.setDateTime(appointment.getDateTime());
+            completeInfoDTO.setStatus(appointment.getStatus());
+            completeInfoDTO.setPriority(appointment.getPriority());
+            completeInfoDTO.setPersonInNeed(appointment.getPersonInNeed().getName());
+            completeInfoDTO.setHelper(appointment.getHelper().getName());
+            completeInfoDTO.setComments(commentRepository.findCommentsByAppointment_Id(appointment.getId())
+                    .stream()
+                    .map(comment ->
+                            new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId()))
+                    .toList());
+            dtos.add(completeInfoDTO);
+        });
+
+        return dtos;
     }
 }

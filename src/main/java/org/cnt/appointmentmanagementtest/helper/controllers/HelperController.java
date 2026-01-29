@@ -61,7 +61,6 @@ public class HelperController {
             return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
         }
         return ResponseEntity.ok(helperService.getAllHelpers(page, size, sortField, sortDirection));
-
     }
 
     // @DeleteMapping("{id}")

@@ -49,7 +49,23 @@ public class AppointmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable("id") UUID id) {
         appointmentService.deleteAppointment(id);
-        return ResponseEntity.delete().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/all/{status}")
+    public ResponseEntity<?> getAllAppointmentsByStatus(
+            @PathVariable("status") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "dateTime") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
+
+    ) {
+        if (!sortDirection.equals("desc") && !sortDirection.equals("DESC")
+            && !sortDirection.equals("ASC") && !sortDirection.equals("asc")) {
+            return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
+        }
+        return ResponseEntity.ok(appointmentService.getAllAppointmentsByStatus(page, size, sortField, sortDirection, status));
     }
 
 }

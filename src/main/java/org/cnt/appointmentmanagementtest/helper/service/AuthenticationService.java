@@ -66,8 +66,15 @@ public class AuthenticationService {
         } catch (BadCredentialsException e) {
             throw new Exception("User doesnt exists or password is wrong");
         }
+        Helper helper = helperRepository.getByUsername(input.getUsername())
+                .orElseThrow(() -> new Exception("User doesnt exists or password is wrong"));
 
-        return helperRepository.getByUsername(input.getUsername()).get();
+        Set<Role> roles = helper.getRoles();
+        if (roles != null && roles.contains(Role.SYSTEM)) {
+            throw new IllegalStateException("SYSTEM users are not allowed to sign in.");
+        }
+
+        return helper;
     }
 
     public Helper getAuthenticatedHelper(HttpServletRequest request) {

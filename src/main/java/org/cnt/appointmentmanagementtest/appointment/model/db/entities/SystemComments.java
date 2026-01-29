@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public enum SystemComments {
 
-    CREATE("test", "Se ha agendado la cita");
+    CREATE("test", "Se ha agendado la cita"),
+    DELETE("delete", "Se fue a la puta"),
+    UPDATE("actualisao", "pos es lo mismo pero no");
 
     private final String code;
     private final String comment;
