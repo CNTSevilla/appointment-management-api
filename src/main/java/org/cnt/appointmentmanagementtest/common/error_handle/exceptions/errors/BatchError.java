@@ -1,33 +1,21 @@
 package org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors;
 
-import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.IError;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IError;
+import org.springframework.http.HttpStatus;
 
 /**
  * Enumeración de errores relacionados con operaciones batch programadas.
  */
+@AllArgsConstructor
+@Getter
 public enum BatchError implements IError {
 
-    ARCHIVING_FAILED("Error al archivar citas semanalmente", "-100"),
-    REMINDER_FAILED("Error al enviar recordatorios diarios de citas", "-101"),
-    SCHEDULE_INTERRUPTED("Ejecución programada interrumpida", "-102"),
-    INVALID_CRON_EXPRESSION("Expresión cron inválida configurada para la operación batch", "-103"),
-    UNKNOWN_BATCH_ERROR("Error desconocido en las operaciones batch programadas", "-104");
+    UNKNOWN_BATCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "-104", "Error desconocido en las operaciones batch programadas");
 
-    private final String message;
+    private final HttpStatus httpStatus;
     private final String code;
+    private final String reason;
 
-    BatchError(String message, String code) {
-        this.message = message;
-        this.code = code;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
-
-    @Override
-    public String getCode() {
-        return this.code;
-    }
 }

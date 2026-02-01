@@ -19,7 +19,7 @@ public class HelperProfileDTO {
     private String phone;
     private String email;
     private List<String> role;
-    private Instant createdAt;  // ✅ nuevo campo
+    private Instant createdAt;
     private List<AppointmentCompleteInfoDTO> pendingAppointments;
     private List<AppointmentCompleteInfoDTO> archivedAppointments;
 }

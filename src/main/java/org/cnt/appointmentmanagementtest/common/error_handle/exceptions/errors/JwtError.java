@@ -1,43 +1,28 @@
 package org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors;
 
-import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.IError;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IAPIError;
 import org.springframework.http.HttpStatus;
 
 /**
  * Enumeración de errores relacionados con JWT (JSON Web Tokens).
  */
-public enum JwtError implements IError {
+@AllArgsConstructor
+@Getter
+public enum JwtError implements IAPIError {
 
-    TOKEN_EXPIRED("El token JWT ha expirado", "-200", HttpStatus.UNAUTHORIZED),
-    INVALID_SIGNATURE("La firma del token JWT no es válida", "-201", HttpStatus.UNAUTHORIZED),
-    MALFORMED_TOKEN("El token JWT está mal formado", "-202", HttpStatus.BAD_REQUEST),
-    UNSUPPORTED_TOKEN("El token JWT no está soportado", "-203", HttpStatus.BAD_REQUEST),
-    CLAIMS_EMPTY("El token JWT no contiene claims válidos", "-204", HttpStatus.UNAUTHORIZED),
-    AUTHENTICATION_FAILED("La autenticación basada en token JWT ha fallado", "-205", HttpStatus.FORBIDDEN),
-    TOKEN_NOT_FOUND("No se ha proporcionado un token JWT", "-206", HttpStatus.UNAUTHORIZED),
-    UNKNOWN_JWT_ERROR("Error desconocido relacionado con token JWT", "-207", HttpStatus.INTERNAL_SERVER_ERROR);
+    TOKEN_EXPIRED( HttpStatus.UNAUTHORIZED, "-200", "El token JWT ha expirado"),
+    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "-201", "La firma del token JWT no es válida"),
+    MALFORMED_TOKEN(HttpStatus.BAD_REQUEST, "-202","El token JWT está mal formado"),
+    UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "-203", "El token JWT no está soportado"),
+    CLAIMS_EMPTY(HttpStatus.UNAUTHORIZED, "-204", "El token JWT no contiene claims válidos"),
+    AUTHENTICATION_FAILED(HttpStatus.FORBIDDEN, "-205","La autenticación basada en token JWT ha fallado"),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "-206","No se ha proporcionado un token JWT"),
+    UNKNOWN_JWT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "-207", "Error desconocido relacionado con token JWT");
 
-    private final String message;
-    private final String code;
     private final HttpStatus httpStatus;
+    private final String code;
+    private final String reason;
 
-    JwtError(String message, String code, HttpStatus httpStatus) {
-        this.message = message;
-        this.code = code;
-        this.httpStatus = httpStatus;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
-
-    @Override
-    public String getCode() {
-        return this.code;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return this.httpStatus;
-    }
 }

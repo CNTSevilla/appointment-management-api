@@ -7,6 +7,5 @@ import lombok.Getter;
 @Getter
 public class TokenDTO {
     private String token;
-
     private long expiresIn;
 }

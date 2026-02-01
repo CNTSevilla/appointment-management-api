@@ -31,41 +31,15 @@ public class AuthenticationController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerUserDto) {
-        try {
-            Helper registeredUser = authenticationService.signup(registerUserDto);
-            return ResponseEntity.ok(registeredUser);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error al registrar el usuario"));
-        }
+        Helper registeredUser = authenticationService.signup(registerUserDto);
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> authenticate(@RequestBody LoginDTO loginUserDto) throws Exception {
-        try {
-            Helper authenticatedUser = authenticationService.authenticate(loginUserDto);
-            String jwtToken = jwtService.generateToken(authenticatedUser);
-            TokenDTO loginResponse = new TokenDTO(jwtToken, jwtService.getExpirationTime());
-            return ResponseEntity.ok(loginResponse);
-
-        } catch (BadCredentialsException e) {
-            // Contraseña incorrecta
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Credenciales incorrectas."));
-
-        } catch (IllegalArgumentException e) {
-            // Algún error de validación (por ejemplo, datos vacíos)
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-
-        } catch (Exception e) {
-            // Error general no controlado
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error inesperado al iniciar sesión."));
-        }
+        Helper authenticatedUser = authenticationService.authenticate(loginUserDto);
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+        TokenDTO loginResponse = new TokenDTO(jwtToken, jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
     }
 }

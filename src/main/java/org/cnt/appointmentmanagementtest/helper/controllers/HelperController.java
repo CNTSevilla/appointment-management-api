@@ -34,18 +34,14 @@ public class HelperController {
     @GetMapping("/me")
     public ResponseEntity<?> getProfile(HttpServletRequest request) {
         Helper helper = authenticationService.getAuthenticatedHelper(request);
-
         HelperProfileDTO helperProfileDTO = helperService.getHelperProfile(helper);
-
         return ResponseEntity.ok(helperProfileDTO);
     }
 
     @PutMapping()
     public ResponseEntity<?> updateHelperProfile(HttpServletRequest request, UpdateHelperProfileDTO updateHelperProfileDTO) {
         Helper helper = authenticationService.getAuthenticatedHelper(request);
-
         HelperProfileDTO helperProfileDTO = helperService.updateHelperProfile(helper, updateHelperProfileDTO);
-
         return ResponseEntity.ok(helperProfileDTO);
     }
 
@@ -62,12 +58,6 @@ public class HelperController {
         }
         return ResponseEntity.ok(helperService.getAllHelpers(page, size, sortField, sortDirection));
     }
-
-    // @DeleteMapping("{id}")
-    // public ResponseEntity<Helper> createPersonInNeed(@PathVariable("id") UUID id) {
-    //     return ResponseEntity.status(HttpStatus.OK).body(helperService.delete(id));
-    // }
-
 
     @PostMapping()
     public ResponseEntity<Helper> createHelper(@RequestBody CreateHelperDTO dto) {

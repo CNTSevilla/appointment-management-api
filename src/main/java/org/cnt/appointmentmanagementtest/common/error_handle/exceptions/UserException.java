@@ -1,8 +1,9 @@
 package org.cnt.appointmentmanagementtest.common.error_handle.exceptions;
 
-public class UserException extends RuntimeException {
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IAPIError;
 
-    public UserException(IError error) {
-        super(error.getMessage());
+public class UserException extends ApiException {
+    public UserException(IAPIError error, String message) {
+        super(error, message);
     }
 }

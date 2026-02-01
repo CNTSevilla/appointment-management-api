@@ -1,40 +1,27 @@
 package org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors;
 
-import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.IError;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IAPIError;
 import org.springframework.http.HttpStatus;
 
-/**
- * Enumeración de errores relacionados con las operaciones de usuario en una app de citas.
- */
-public enum UserError implements IError {
 
-    USER_NOT_FOUND("El usuario no fue encontrado", "-300", HttpStatus.NOT_FOUND),
-    DUPLICATE_USER("El usuario ya existe", "-301", HttpStatus.CONFLICT),
-    INVALID_CREDENTIALS("Credenciales inválidas para iniciar sesión", "-302", HttpStatus.UNAUTHORIZED),
-    ACCOUNT_LOCKED("La cuenta del usuario está bloqueada", "-303", HttpStatus.FORBIDDEN),
-    INVALID_INPUT("Datos de entrada del usuario no válidos", "-304", HttpStatus.BAD_REQUEST),
-    USER_NOT_AUTHORIZED("El usuario no está autorizado para realizar esta operación", "-305", HttpStatus.FORBIDDEN),
-    PASSWORD_TOO_WEAK("La contraseña del usuario no cumple con los criterios mínimos", "-306", HttpStatus.BAD_REQUEST),
-    SESSION_EXPIRED("La sesión del usuario ha expirado", "-307", HttpStatus.UNAUTHORIZED),
-    UNKNOWN_USER_ERROR("Error desconocido relacionado con operación de usuario", "-308", HttpStatus.INTERNAL_SERVER_ERROR);
+@AllArgsConstructor
+@Getter
+public enum UserError implements IAPIError {
 
-    private final String message;
-    private final String code;
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "-300","El usuario no fue encontrado"),
+    DUPLICATE_USER(HttpStatus.CONFLICT, "-301","El usuario ya existe"),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED,"-302", "Credenciales inválidas para iniciar sesión"),
+    ACCOUNT_LOCKED(HttpStatus.FORBIDDEN, "-303","La cuenta del usuario está bloqueada"),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "-304", "Datos de entrada del usuario no válidos"),
+    USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "-305", "El usuario no está autorizado para realizar esta operación"),
+    PASSWORD_TOO_WEAK(HttpStatus.BAD_REQUEST, "-306", "La contraseña del usuario no cumple con los criterios mínimos"),
+    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "-307", "La sesión del usuario ha expirado"),
+    UNKNOWN_USER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "-308","Error desconocido relacionado con operación de usuario");
+
     private final HttpStatus httpStatus;
+    private final String code;
+    private final String reason;
 
-    UserError(String message, String code, HttpStatus httpStatus) {
-        this.message = message;
-        this.code = code;
-        this.httpStatus = httpStatus;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
-
-    @Override
-    public String getCode() {
-        return this.code;
-    }
 }

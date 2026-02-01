@@ -36,6 +36,9 @@ public class AppSecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 👈 habilitar CORS
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/authentication/**").permitAll()
+                .requestMatchers("/v3/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

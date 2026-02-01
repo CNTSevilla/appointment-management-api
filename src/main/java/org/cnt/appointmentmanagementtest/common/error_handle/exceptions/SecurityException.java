@@ -1,7 +1,10 @@
 package org.cnt.appointmentmanagementtest.common.error_handle.exceptions;
 
-public class SecurityException extends RuntimeException {
-    public SecurityException(IError error) {
-        super(error.getMessage());
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IAPIError;
+import org.cnt.appointmentmanagementtest.common.error_handle.exceptions.errors.interfaces.IError;
+
+public class SecurityException extends ApiException {
+    public SecurityException(IAPIError error, String message) {
+        super(error, message);
     }
 }
