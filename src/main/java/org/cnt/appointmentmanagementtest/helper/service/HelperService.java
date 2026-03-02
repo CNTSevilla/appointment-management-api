@@ -64,8 +64,29 @@ public class HelperService {
             helper.setPhone(updateHelperProfileDTO.getPhone());
         }
 
-        if (updateHelperProfileDTO.getClearPassword() != null) {
-            helper.setPasswordHashed(passwordEncoder.encode(updateHelperProfileDTO.getClearPassword()));
+        if (updateHelperProfileDTO.getUsername() != null) {
+            helper.setUsername(updateHelperProfileDTO.getUsername());
+        }
+
+        // 🔐 Cambio de contraseña seguro
+        if (updateHelperProfileDTO.getNewPassword() != null && !updateHelperProfileDTO.getNewPassword().isBlank()) {
+
+            if (updateHelperProfileDTO.getCurrentPassword() == null || updateHelperProfileDTO.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Debes proporcionar la contraseña actual.");
+            }
+
+            boolean matches = passwordEncoder.matches(
+                    updateHelperProfileDTO.getCurrentPassword(),
+                    helper.getPasswordHashed()
+            );
+
+            if (!matches) {
+                throw new IllegalArgumentException("La contraseña actual no es correcta.");
+            }
+
+            helper.setPasswordHashed(
+                    passwordEncoder.encode(updateHelperProfileDTO.getNewPassword())
+            );
         }
 
         return getHelperProfile(helperRepository.save(helper));
@@ -79,27 +100,6 @@ public class HelperService {
         helper.setName(dto.getName());
         helper.setPhone(dto.getPhone());
         helper.setEmail(dto.getEmail());
-
-        Set<Role> roles;
-
-        if (dto.getRoles() == null || dto.getRoles().isEmpty()) {
-            // ✅ Si no se envían roles, asignar uno por defecto
-            roles = Set.of(Role.USER);
-        } else {
-            // ✅ Validar cada rol recibido
-            roles = dto.getRoles().stream()
-                .map(role -> {
-                    try {
-                        return Role.valueOf(role.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Rol inválido: " + role);
-                    }
-                })
-                .collect(Collectors.toSet());
-        }
-
-        helper.setRoles(roles);
-
         return helperRepository.save(helper);
     }
 

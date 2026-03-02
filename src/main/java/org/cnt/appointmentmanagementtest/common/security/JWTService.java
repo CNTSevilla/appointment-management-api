@@ -55,6 +55,8 @@ public class JWTService {
             claims.put("roles",  user.get().getRoles().stream().map(Role::name).collect(Collectors.joining(", ")));
             claims.put("email", user.get().getEmail());
             claims.put("name", user.get().getName());
+            claims.put("username", user.get().getUsername());
+            claims.put("phone", user.get().getPhone());
 
             return generateToken(claims, userDetails);
         } else {

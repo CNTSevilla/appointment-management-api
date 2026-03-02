@@ -7,9 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 public class UpdateHelperProfileDTO {
 
-    private String clearPassword;
-
+    private String username;
     private String phone;
     private String email;
+    private String currentPassword;
+    private String newPassword;
 
 }
