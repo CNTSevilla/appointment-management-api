@@ -102,8 +102,11 @@ public class CommentService {
 
     public void createSystemComment(UUID appointmentId, SystemComments sysComments) {
 
-        Appointment appointment = appointmentRepository.findById(appointmentId).get();
-        Helper helper = helperRepository.findFirstHelperByRole(Role.SYSTEM).get();
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        Helper helper = helperRepository.findFirstHelperByRole(Role.SYSTEM)
+                .orElseThrow(() -> new RuntimeException("System helper not found"));
 
         Comment comment = new Comment();
         comment.setComment(SYSTEM_PREFIX + sysComments.getComment());

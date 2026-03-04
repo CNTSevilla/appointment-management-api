@@ -28,4 +28,6 @@ public interface HelperRepository extends JpaRepository<Helper, UUID> {
 
     boolean existsByEmail(String email);
 
+    long countByRolesContains(Role role);
+
 }

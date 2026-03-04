@@ -22,7 +22,7 @@ public class AdminInit implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        if (helperRepository.count() == 0) {
+        if (helperRepository.countByRolesContains(Role.ADMIN) == 0) {
             Helper admin = new Helper();
             admin.setName("cnt-admin");
             admin.setPhone("+34600500178");
@@ -32,11 +32,13 @@ public class AdminInit implements CommandLineRunner {
             admin.setUsername("cnt-admin");
 
             helperRepository.save(admin);
+        }
 
+        if (helperRepository.countByRolesContains(Role.SYSTEM) == 0) {
             Helper system = new Helper();
             system.setName("[SYSTEM]");
             system.setPhone("+34600500178");
-            system.setEmail("system@inventado.tnc.se");
+            system.setEmail("system@inventado.cnt.sov");
             system.setPasswordHashed(passwordEncoder.encode("ENESTACUENTAUNONOSEPUEDELOGEAR"));
             system.setRoles(Set.of(Role.SYSTEM));
             system.setUsername("[SYSTEM]");
