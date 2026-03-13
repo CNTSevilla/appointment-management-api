@@ -47,6 +47,7 @@ public class CommentService {
                     dto.setComment(comment.getComment());
                     dto.setDate(comment.getDate());
                     dto.setHelper(comment.getHelper().getId());
+                    dto.setHelperName(comment.getHelper().getName());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -61,6 +62,7 @@ public class CommentService {
                     dto.setComment(comment.getComment());
                     dto.setDate(comment.getDate());
                     dto.setHelper(comment.getHelper().getId());
+                    dto.setHelperName(comment.getHelper().getName());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -95,6 +97,7 @@ public class CommentService {
         commentDTO.setDate(commentToSave.getDate());
         commentDTO.setComment(commentToSave.getComment());
         commentDTO.setHelper(comment.getHelper().getId());
+        commentDTO.setHelperName(comment.getHelper().getName());
         completeInfoDTO.setComments(List.of(commentDTO));
 
         return completeInfoDTO;
@@ -126,6 +129,8 @@ public class CommentService {
         dto.setComment(comment.getComment());
         dto.setDate(comment.getDate());
         dto.setHelper(comment.getHelper().getId());
+        dto.setHelperName(comment.getHelper().getName());
+
         return dto;
     }
 
@@ -145,6 +150,7 @@ public class CommentService {
         responseDto.setComment(updatedComment.getComment());
         responseDto.setDate(updatedComment.getDate());
         responseDto.setHelper(updatedComment.getHelper().getId());
+        responseDto.setHelperName(updatedComment.getHelper().getName());
         return responseDto;
     }
 

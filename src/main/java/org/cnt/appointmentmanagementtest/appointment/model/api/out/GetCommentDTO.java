@@ -15,4 +15,5 @@ public class GetCommentDTO {
     private String comment;
     private ZonedDateTime date;
     private UUID helper;
+    private String helperName;
 }

@@ -40,11 +40,11 @@ public class AppointmentService {
         this.commentRepository = commentRepository;
         this.commentService = commentService;
     }
-    
+
     public AppointmentBasicInfoDTO createAppointment(CreateAppointmentDTO dto) {
         PersonInNeed personInNeed = personInNeedRepository.findById(dto.getPersonInNeed()).get();
         Helper helper = helperRepository.findById(dto.getHelper()).get();
-        
+
         Appointment appointment = new Appointment();
         appointment.setDateTime(dto.getDateTime());
         appointment.setPriority(dto.getPriority());
@@ -53,7 +53,7 @@ public class AppointmentService {
         appointment.setHelper(helper);
         personInNeed.getAppointments().add(appointment);
         helper.addAppointment(appointment);
-        
+
         Appointment createdAppointment = appointmentRepository.save(appointment);
 
         commentService.createSystemComment(createdAppointment.getId(), SystemComments.CREATE);
@@ -103,7 +103,7 @@ public class AppointmentService {
         completeInfoDTO.setComments(commentRepository.findCommentsByAppointment_Id(appointment.getId())
                 .stream()
                 .map(comment ->
-                        new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId()))
+                        new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId(), comment.getHelper().getName()))
                 .toList());
 
         return completeInfoDTO;
@@ -175,7 +175,7 @@ public class AppointmentService {
             completeInfoDTO.setComments(commentRepository.findCommentsByAppointment_Id(appointment.getId())
                     .stream()
                     .map(comment ->
-                            new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId()))
+                            new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId(), comment.getHelper().getName()))
                     .toList());
             dtos.add(completeInfoDTO);
         });

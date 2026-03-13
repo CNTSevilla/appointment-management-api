@@ -69,7 +69,9 @@ public class PersonInNeedService {
                                         comm.getId(),
                                         comm.getComment(),
                                         comm.getDate(),
-                                        comm.getHelper().getId())).toList())).toList());
+                                        comm.getHelper().getId(),
+                                        comm.getHelper().getName()
+                                        )).toList())).toList());
 
         return completeInfoDTO;
     }
