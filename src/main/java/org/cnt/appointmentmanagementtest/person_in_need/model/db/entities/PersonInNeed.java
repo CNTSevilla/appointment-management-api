@@ -3,6 +3,7 @@ package org.cnt.appointmentmanagementtest.person_in_need.model.db.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,8 +29,8 @@ public class PersonInNeed {
     @CreationTimestamp
     private Instant createdAt;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "personInNeed", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Appointment> appointments;
 
 }

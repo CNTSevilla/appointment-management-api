@@ -1,4 +1,4 @@
-package org.cnt.appointmentmanagementtest.common.security;
+package org.cnt.appointmentmanagementtest.common.configs.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

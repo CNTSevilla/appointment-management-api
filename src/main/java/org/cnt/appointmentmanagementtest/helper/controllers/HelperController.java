@@ -1,6 +1,7 @@
 package org.cnt.appointmentmanagementtest.helper.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.cnt.appointmentmanagementtest.common.annotations.DefaultPageable;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.UpdateHelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.out.HelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.CreateHelperDTO;
@@ -10,6 +11,7 @@ import org.cnt.appointmentmanagementtest.helper.service.HelperService;
 import org.cnt.appointmentmanagementtest.person_in_need.model.api.in.CreatePersonInNeedDTO;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.hibernate.query.SortDirection;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,17 +48,8 @@ public class HelperController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllHelpers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "createdAt") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
-    ) {
-        if (!sortDirection.equals("desc") && !sortDirection.equals("DESC")
-            && !sortDirection.equals("ASC") && !sortDirection.equals("asc")) {
-            return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
-        }
-        return ResponseEntity.ok(helperService.getAllHelpers(page, size, sortField, sortDirection));
+    public ResponseEntity<?> getAllHelpers(@DefaultPageable Pageable pageable) {
+        return ResponseEntity.ok(helperService.getAllHelpers(pageable));
     }
 
     @PostMapping()

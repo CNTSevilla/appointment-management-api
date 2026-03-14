@@ -28,19 +28,18 @@ public final class Appointment {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "person_in_need_id")
-    @JsonBackReference
     private PersonInNeed personInNeed;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "helper_id")
-    @JsonBackReference
     private Helper helper;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "appointment-comment")
     private List<Comment> comments;
 }

@@ -1,4 +1,4 @@
-package org.cnt.appointmentmanagementtest.common.security;
+package org.cnt.appointmentmanagementtest.common.configs.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

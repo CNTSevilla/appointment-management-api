@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 
@@ -23,14 +24,14 @@ public class Comment {
     private String comment;
     private ZonedDateTime date;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "helper_id")
-    @JsonBackReference(value = "helper-comment")
     private Helper helper;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "appointment_id")
-    @JsonBackReference(value = "appointment-comment")
     private Appointment appointment;
 }
 

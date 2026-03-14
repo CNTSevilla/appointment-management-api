@@ -1,5 +1,8 @@
 package org.cnt.appointmentmanagementtest.helper.service;
 
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
+import org.cnt.appointmentmanagementtest.appointment.service.AppointmentService;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.UpdateHelperProfileDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.CreateHelperDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.out.HelperProfileDTO;
@@ -10,6 +13,8 @@ import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.Person
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Set;
@@ -22,10 +27,12 @@ public class HelperService {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final HelperRepository helperRepository;
+    private final AppointmentService appointmentService;
 
-    public HelperService(BCryptPasswordEncoder passwordEncoder, HelperRepository helperRepository) {
+    public HelperService(BCryptPasswordEncoder passwordEncoder, HelperRepository helperRepository, AppointmentService appointmentService) {
         this.passwordEncoder = passwordEncoder;
         this.helperRepository = helperRepository;
+        this.appointmentService = appointmentService;
     }
 
     public HelperProfileDTO getHelperProfile(Helper helper) {
@@ -38,17 +45,11 @@ public class HelperService {
         helperProfileDTO.setEmail(helper.getEmail());
         helperProfileDTO.setRole(helper.getRoles().stream().map(Enum::toString).toList());
         helperProfileDTO.setCreatedAt(helper.getCreatedAt());
+        helperProfileDTO.setPendingAppointments(appointmentService.getAppointmentsFromHelper(helper.getId(), Pageable.unpaged()));
         return helperProfileDTO;
     }
 
-
-
-    public Page<HelperProfileDTO> getAllHelpers(int page, int size, String sortField, String sortDirection) {
-        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
-                                            ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-        Sort sort = Sort.by(direction, sortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public Page<HelperProfileDTO> getAllHelpers(Pageable pageable) {
         Page<Helper> helpers = helperRepository.findAll(pageable);
 
         return helpers.map(this::getHelperProfile);
@@ -105,8 +106,13 @@ public class HelperService {
 
     public Helper delete(UUID id) {
         Helper helper = helperRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Helper with id " + id + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Helper with id " + id + " not found"));
+
+        Helper system = helperRepository.findFirstHelperByRole(Role.SYSTEM).orElseThrow();
+
+        appointmentService.getAppointmentsFromHelper(helper.getId(), Pageable.unpaged())
+                .forEach(appointment -> appointmentService.updateAppointment(appointment.getId(), new UpdateAppointmentDTO(null, null, null, null, system.getId())));
+
         helperRepository.deleteById(id);
 
         return helper;

@@ -1,9 +1,11 @@
 package org.cnt.appointmentmanagementtest.appointment.service;
 
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentBasicInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentStatisticsDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Status;
@@ -15,11 +17,11 @@ import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepo
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.repositories.PersonInNeedRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -58,6 +60,17 @@ public class AppointmentService {
 
         commentService.createSystemComment(createdAppointment.getId(), SystemComments.CREATE);
 
+        if (dto.getInitialComment() != null ) {
+            if (!dto.getInitialComment().isEmpty() && !dto.getInitialComment().isBlank()) {
+                CreateCommentDTO commentDto = new CreateCommentDTO();
+                commentDto.setAppointmentId(createdAppointment.getId());
+                commentDto.setHelper(helper.getId());
+                commentDto.setComment(dto.getInitialComment());
+
+                commentService.createComment(commentDto);
+            }
+        }
+
         return getAppointmentBasicInfoDTO(createdAppointment);
 
     }
@@ -73,8 +86,24 @@ public class AppointmentService {
         return createdAppointmentDTO;
     }
 
-    public List<AppointmentBasicInfoDTO> getAppointments() {
-           List<Appointment> appointments = appointmentRepository.findAll();
+    public List<AppointmentCompleteInfoDTO> getAppointmentsFromHelper(UUID helperId, Pageable pageable) {
+        List<AppointmentCompleteInfoDTO> dtos = new ArrayList<>();
+        appointmentRepository.findAppointmentsByHelperId(helperId, pageable)
+                .stream()
+                .filter(appointment -> appointment.getStatus().equals(Status.ACTIVE) || appointment.getStatus().equals(Status.DEFERRED))
+                .forEach(
+                appointment ->
+                        dtos.add(new AppointmentCompleteInfoDTO(appointment.getId(),
+                                                        appointment.getDateTime(), appointment.getPriority(),
+                                                        appointment.getStatus(), appointment.getPersonInNeed().getName(),
+                                                        appointment.getHelper().getName(), null))
+        );
+
+        return dtos;
+    }
+
+    public List<AppointmentBasicInfoDTO> getAppointments(Pageable pageable) {
+           Page<Appointment> appointments = appointmentRepository.findAll(pageable);
 
            List<AppointmentBasicInfoDTO> dtos = new ArrayList<>();
 
@@ -109,11 +138,35 @@ public class AppointmentService {
         return completeInfoDTO;
     }
 
+    public List<AppointmentCompleteInfoDTO> getAppointmentsWithComments(Pageable pageable, ZonedDateTime start, ZonedDateTime end) {
+        Page<Appointment> appointments = appointmentRepository.findAppointmentsByDateTimeBetween(start, end, pageable);
+
+        List<AppointmentCompleteInfoDTO> dtos = new ArrayList<>();
+
+        appointments.forEach(appointment -> {
+            AppointmentCompleteInfoDTO appDTO = new AppointmentCompleteInfoDTO();
+
+            appDTO.setId(appointment.getId());
+            appDTO.setDateTime(appointment.getDateTime());
+            appDTO.setStatus(appointment.getStatus());
+            appDTO.setPriority(appointment.getPriority());
+            appDTO.setPersonInNeed(appointment.getPersonInNeed().getName());
+            appDTO.setHelper(appointment.getHelper().getName());
+            appDTO.setComments(commentRepository.findCommentsByAppointment_Id(appointment.getId())
+                    .stream()
+                    .map(comment ->
+                            new GetCommentDTO(comment.getId(), comment.getComment(), comment.getDate(), comment.getHelper().getId(), comment.getHelper().getName()))
+                    .toList());
+            dtos.add(appDTO);
+        });
+
+        return dtos;
+    }
+
     public AppointmentBasicInfoDTO updateAppointment(UUID id, UpdateAppointmentDTO dto) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        // Solo actualizar los campos que vienen en el DTO (no null)
         if (dto.getDateTime() != null) {
             appointment.setDateTime(dto.getDateTime());
         }
@@ -155,12 +208,8 @@ public class AppointmentService {
     }
 
 
-    public List<AppointmentCompleteInfoDTO> getAllAppointmentsByStatus(int page, int size, String sortField, String sortDirection, String status) {
-        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
-                                            ? Sort.Direction.DESC : Sort.Direction.ASC;
+    public List<AppointmentCompleteInfoDTO> getAllAppointmentsByStatus(Pageable pageable, String status) {
 
-        Sort sort = Sort.by(direction, sortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
         List<Appointment> appointments = appointmentRepository.findAppointmentsByStatus(Status.valueOf(status.toUpperCase()), pageable);
 
         List<AppointmentCompleteInfoDTO> dtos = new ArrayList<>();
@@ -181,5 +230,76 @@ public class AppointmentService {
         });
 
         return dtos;
+    }
+
+    public AppointmentStatisticsDTO getAppointmentStatistics(UUID helperId) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId);
+        ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Status pendingStatus = Status.ACTIVE;
+
+        int todayAppointments = Math.toIntExact(
+                appointmentRepository.countByDateTimeBetween(startOfDay, endOfDay)
+        );
+
+        int yourTodayAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperIdAndDateTimeBetween(helperId, startOfDay, endOfDay)
+        );
+
+        int deferredAppointments = Math.toIntExact(
+                appointmentRepository.countByStatus(Status.DEFERRED)
+        );
+
+        int yourDeferredAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperIdAndStatus(helperId, Status.DEFERRED)
+        );
+
+        int completedAppointments = Math.toIntExact(
+                appointmentRepository.countByStatus(Status.COMPLETED)
+        );
+
+        int yourCompletedAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperIdAndStatus(helperId, Status.COMPLETED)
+        );
+
+        int pendingAppointments = Math.toIntExact(
+                appointmentRepository.countByStatus(pendingStatus)
+        );
+
+        int yourPendingAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperIdAndStatus(helperId, pendingStatus)
+        );
+
+        int archivedAppointments = Math.toIntExact(
+                appointmentRepository.countByStatus(Status.ARCHIVED)
+        );
+
+        int yourArchivedAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperIdAndStatus(helperId, Status.ARCHIVED)
+        );
+
+        int yourTotalAppointments = Math.toIntExact(
+                appointmentRepository.countByHelperId(helperId)
+        );
+
+        int totalAppointments = Math.toIntExact(
+                appointmentRepository.count()
+        );
+
+        return new AppointmentStatisticsDTO(
+                todayAppointments,
+                yourTodayAppointments,
+                yourDeferredAppointments,
+                deferredAppointments,
+                yourCompletedAppointments,
+                completedAppointments,
+                yourPendingAppointments,
+                pendingAppointments,
+                yourArchivedAppointments,
+                archivedAppointments,
+                yourTotalAppointments,
+                totalAppointments
+        );
     }
 }

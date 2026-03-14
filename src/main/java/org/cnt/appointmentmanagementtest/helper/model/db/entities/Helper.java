@@ -45,15 +45,11 @@ public class Helper implements UserDetails, Serializable {
     private Set<Role> roles;
 
     @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Appointment> appointment;
 
     @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "helper-comment")
     private List<Comment> comments;
 
     @Override

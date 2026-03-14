@@ -1,11 +1,18 @@
 package org.cnt.appointmentmanagementtest.appointment.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
+import org.cnt.appointmentmanagementtest.appointment.model.api.in.AppointmentFilterDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentBasicInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.service.AppointmentService;
+import org.cnt.appointmentmanagementtest.common.annotations.DefaultPageable;
 import org.cnt.appointmentmanagementtest.common.mail.CustomEmailService;
+import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
+import org.cnt.appointmentmanagementtest.helper.service.AuthenticationService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +27,27 @@ public class AppointmentController {
 
     private final CustomEmailService customEmailService;
     private final AppointmentService appointmentService;
+    private final AuthenticationService authenticationService;
 
-    public AppointmentController(AppointmentService appointmentService, CustomEmailService customEmailService) {
+    public AppointmentController(AppointmentService appointmentService, CustomEmailService customEmailService,
+                                 AuthenticationService authenticationService) {
         this.appointmentService = appointmentService;
         this.customEmailService = customEmailService;
+        this.authenticationService = authenticationService;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<AppointmentBasicInfoDTO>> getAllAppointments() throws Exception {
-        return ResponseEntity.ok(appointmentService.getAppointments());
+    public ResponseEntity<List<AppointmentBasicInfoDTO>> getAllAppointments(@DefaultPageable Pageable pageable) throws Exception {
+        return ResponseEntity.ok(appointmentService.getAppointments(pageable));
+    }
+
+    @GetMapping("/all-with-comments")
+    public ResponseEntity<List<AppointmentCompleteInfoDTO>> getAllAppointmentsWithComments(@DefaultPageable Pageable pageable, @NotNull @RequestBody AppointmentFilterDTO filter) throws Exception {
+
+        if (filter.getEnd() == null) {
+            filter.setEnd(ZonedDateTime.now());
+        }
+        return ResponseEntity.ok(appointmentService.getAppointmentsWithComments(pageable, filter.getStart(), filter.getEnd()));
     }
     
     @GetMapping("/{id}")
@@ -53,19 +72,14 @@ public class AppointmentController {
     }
 
     @GetMapping("/all/{status}")
-    public ResponseEntity<?> getAllAppointmentsByStatus(
-            @PathVariable("status") String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dateTime") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
+    public ResponseEntity<?> getAllAppointmentsByStatus(@PathVariable("status") String status, @DefaultPageable Pageable pageable) {
+        return ResponseEntity.ok(appointmentService.getAllAppointmentsByStatus(pageable, status));
+    }
 
-    ) {
-        if (!sortDirection.equals("desc") && !sortDirection.equals("DESC")
-            && !sortDirection.equals("ASC") && !sortDirection.equals("asc")) {
-            return ResponseEntity.badRequest().body("sortDirection must be 'asc' or 'desc'.");
-        }
-        return ResponseEntity.ok(appointmentService.getAllAppointmentsByStatus(page, size, sortField, sortDirection, status));
+    @GetMapping("/stats")
+    public ResponseEntity<?> getStats(HttpServletRequest request) {
+        Helper helper = authenticationService.getAuthenticatedHelper(request);
+        return ResponseEntity.ok(appointmentService.getAppointmentStatistics(helper.getId()));
     }
 
 }

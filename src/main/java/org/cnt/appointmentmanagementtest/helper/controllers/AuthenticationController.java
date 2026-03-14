@@ -1,6 +1,6 @@
 package org.cnt.appointmentmanagementtest.helper.controllers;
 
-import org.cnt.appointmentmanagementtest.common.security.JWTService;
+import org.cnt.appointmentmanagementtest.common.configs.security.JWTService;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.LoginDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.in.RegisterDTO;
 import org.cnt.appointmentmanagementtest.helper.model.api.out.TokenDTO;
@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/authentication")

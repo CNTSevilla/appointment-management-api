@@ -5,6 +5,8 @@ import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateCommentD
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
 import org.cnt.appointmentmanagementtest.appointment.service.CommentService;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
+import org.cnt.appointmentmanagementtest.common.annotations.DefaultPageable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,8 +34,8 @@ public class CommentController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<GetCommentDTO>> getAllComments() {
-        return ResponseEntity.ok(commentService.getAllComments());
+    public ResponseEntity<List<GetCommentDTO>> getAllComments(@DefaultPageable Pageable pageable) {
+        return ResponseEntity.ok(commentService.getAllComments(pageable));
     }
 
     @GetMapping("/appointment/{appointmentId}")

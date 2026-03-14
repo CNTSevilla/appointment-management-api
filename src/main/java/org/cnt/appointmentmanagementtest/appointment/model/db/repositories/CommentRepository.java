@@ -1,7 +1,7 @@
 package org.cnt.appointmentmanagementtest.appointment.model.db.repositories;
 
-import org.cnt.appointmentmanagementtest.appointment.model.api.out.GetCommentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Comment;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

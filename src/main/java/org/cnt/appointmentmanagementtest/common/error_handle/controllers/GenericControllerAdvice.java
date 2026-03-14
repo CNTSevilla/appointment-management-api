@@ -40,8 +40,8 @@ public class GenericControllerAdvice {
         );
 
         // Log interno (sin filtrar internals al cliente)
-        log.warn("Handled ApiException: {}, \ntime={}, \nstatus={}, \nmessage={}, \nreason={}, \nexception={}",
-                body.path(), body.timestamp(), body.status(), body.error(), body.reason(), ex);
+        log.warn("Handled ApiException: {}, \ntime={}, \nstatus={}, \nmessage={}, \nreason={}",
+                body.path(), body.timestamp(), body.status(), body.error(), body.reason());
 
         return ResponseEntity.status(err.getHttpStatus()).body(body);
     }
@@ -58,6 +58,9 @@ public class GenericControllerAdvice {
                 request.getRequestURI()
         );
 
+        log.warn("Handled MethodArgumentNotValidException: {}, \ntime={}, \nstatus={}, \nmessage={}, \nreason={}",
+                body.path(), body.timestamp(), body.status(), body.error(), body.reason());
+
         return ResponseEntity.badRequest().body(body);
     }
 
@@ -71,6 +74,10 @@ public class GenericControllerAdvice {
                 "La petición contiene valores no válidos",
                 request.getRequestURI()
         );
+
+        log.warn("Handled ConstraintViolationException: {}, \ntime={}, \nstatus={}, \nmessage={}, \nreason={}",
+                body.path(), body.timestamp(), body.status(), body.error(), body.reason());
+
         return ResponseEntity.badRequest().body(body);
     }
 
@@ -84,6 +91,10 @@ public class GenericControllerAdvice {
                 "El cuerpo de la petición no es un JSON válido",
                 request.getRequestURI()
         );
+
+        log.warn("Handled HttpMessageNotReadableException: {}, \ntime={}, \nstatus={}, \nmessage={}, \nreason={}",
+                body.path(), body.timestamp(), body.status(), body.error(), body.reason());
+
         return ResponseEntity.badRequest().body(body);
     }
 

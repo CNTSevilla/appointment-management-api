@@ -25,14 +25,19 @@ public class PersonInNeedService {
         this.personInNeedRepository = personInNeedRepository;
     }
 
-    public Page<PersonInNeed> getAllPersonInNeed(int page, int size, String sortField, String sortDirection) {
-        Sort.Direction direction = (sortDirection.equals("desc") || sortDirection.equals("DESC"))
-                ? Sort.Direction.DESC : Sort.Direction.ASC;
+    public Page<PersonInNeedSimpleDTO> getAllPersonInNeed(Pageable pageable) {
 
-        Sort sort = Sort.by(direction, sortField);
+        Page<PersonInNeed> people = personInNeedRepository.findAll(pageable);
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return personInNeedRepository.findAll(pageable);
+        return people
+                .map(person ->
+                        new PersonInNeedSimpleDTO(
+                            person.getName(),
+                            person.getPhone(),
+                            person.getEmail(),
+                            person.getCreatedAt()
+                        )
+                );
     }
 
     public PersonInNeedSimpleDTO getOnePersonInNeed(UUID id) {
@@ -76,16 +81,16 @@ public class PersonInNeedService {
         return completeInfoDTO;
     }
 
-    public PersonInNeed save(CreatePersonInNeedDTO dto) {
+    public void save(CreatePersonInNeedDTO dto) {
         PersonInNeed personInNeed = new PersonInNeed();
         personInNeed.setName(dto.getName());
         personInNeed.setEmail(dto.getEmail());
         personInNeed.setPhone(dto.getPhone());
 
-        return personInNeedRepository.save(personInNeed);
+        personInNeedRepository.save(personInNeed);
     }
 
-    public PersonInNeed update(UUID id, CreatePersonInNeedDTO dto) {
+    public void update(UUID id, CreatePersonInNeedDTO dto) {
         Optional<PersonInNeed> person = personInNeedRepository.findById(id);
 
         if (person.isPresent()) {
@@ -97,18 +102,14 @@ public class PersonInNeedService {
 
             personInNeed.setAppointments(personInNeed.getAppointments());
 
-            return personInNeedRepository.save(personInNeed);
+            personInNeedRepository.save(personInNeed);
         }
         throw new IllegalArgumentException("PersonInNeed with id " + id + " not found");
 
     }
 
-    public PersonInNeed delete(UUID id) {
-        PersonInNeed person = personInNeedRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "PersonInNeed with id " + id + " not found"));
+    public void delete(UUID id) {
         personInNeedRepository.deleteById(id);
 
-        return person;
     }
 }

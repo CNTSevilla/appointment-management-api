@@ -12,6 +12,7 @@ import org.cnt.appointmentmanagementtest.appointment.model.db.entities.SystemCom
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.model.db.entities.Role;
 import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -38,8 +39,8 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public List<GetCommentDTO> getAllComments() {
-        return commentRepository.findAll()
+    public List<GetCommentDTO> getAllComments(Pageable pageable) {
+        return commentRepository.findAll(pageable)
                 .stream()
                 .map(comment -> {
                     GetCommentDTO dto = new GetCommentDTO();

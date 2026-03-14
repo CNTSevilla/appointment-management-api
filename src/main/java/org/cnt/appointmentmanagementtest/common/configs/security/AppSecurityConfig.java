@@ -1,6 +1,5 @@
-package org.cnt.appointmentmanagementtest.common.configs;
+package org.cnt.appointmentmanagementtest.common.configs.security;
 
-import org.cnt.appointmentmanagementtest.common.security.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
