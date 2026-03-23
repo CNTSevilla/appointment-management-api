@@ -82,4 +82,9 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentStatistics(helper.getId()));
     }
 
+    @GetMapping("/count/{status}")
+    public ResponseEntity<Long> countAppointmentsByStatus(@PathVariable("status") String status) {
+        return ResponseEntity.ok(appointmentService.countAppointmentsByStatus(status));
+    }
+
 }

@@ -16,6 +16,8 @@ import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.helper.model.db.repositories.HelperRepository;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.repositories.PersonInNeedRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,13 @@ public class AppointmentService {
             if (!dto.getInitialComment().isEmpty() && !dto.getInitialComment().isBlank()) {
                 CreateCommentDTO commentDto = new CreateCommentDTO();
                 commentDto.setAppointmentId(createdAppointment.getId());
-                commentDto.setHelper(helper.getId());
+                Authentication authentication = SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+                Helper user = (Helper) authentication.getPrincipal();
+
+                commentDto.setHelper(user.getId());
                 commentDto.setComment(dto.getInitialComment());
 
                 commentService.createComment(commentDto);
@@ -207,7 +215,7 @@ public class AppointmentService {
         appointmentRepository.delete(appointment);
     }
 
-
+    // ! DA ERROR, NECESIO QUE DEVEULVA UN Page NO UN List | Como en getAllHelpers
     public List<AppointmentCompleteInfoDTO> getAllAppointmentsByStatus(Pageable pageable, String status) {
 
         List<Appointment> appointments = appointmentRepository.findAppointmentsByStatus(Status.valueOf(status.toUpperCase()), pageable);
@@ -301,5 +309,10 @@ public class AppointmentService {
                 yourTotalAppointments,
                 totalAppointments
         );
+    }
+
+    public long countAppointmentsByStatus(String status) {
+        Status statusEnum = Status.valueOf(status.toUpperCase());
+        return appointmentRepository.countByStatus(statusEnum);
     }
 }
