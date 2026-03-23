@@ -66,13 +66,7 @@ public class AppointmentService {
             if (!dto.getInitialComment().isEmpty() && !dto.getInitialComment().isBlank()) {
                 CreateCommentDTO commentDto = new CreateCommentDTO();
                 commentDto.setAppointmentId(createdAppointment.getId());
-                Authentication authentication = SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
-                Helper user = (Helper) authentication.getPrincipal();
-
-                commentDto.setHelper(user.getId());
+                commentDto.setHelper(dto.getFirstCommentId());
                 commentDto.setComment(dto.getInitialComment());
 
                 commentService.createComment(commentDto);
@@ -311,8 +305,7 @@ public class AppointmentService {
         );
     }
 
-    public long countAppointmentsByStatus(String status) {
-        Status statusEnum = Status.valueOf(status.toUpperCase());
-        return appointmentRepository.countByStatus(statusEnum);
+    public long countAppointmentsByStatus(Status status) {
+        return appointmentRepository.countByStatus(status);
     }
 }

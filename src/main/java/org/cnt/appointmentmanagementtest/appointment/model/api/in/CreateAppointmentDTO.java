@@ -20,4 +20,5 @@ public class CreateAppointmentDTO {
     private UUID personInNeed;
     private UUID helper;
     private String initialComment;
+    private UUID firstCommentId;
 }

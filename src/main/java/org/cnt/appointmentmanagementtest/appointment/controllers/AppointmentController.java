@@ -7,6 +7,7 @@ import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentBa
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.CreateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.in.UpdateAppointmentDTO;
 import org.cnt.appointmentmanagementtest.appointment.model.api.out.AppointmentCompleteInfoDTO;
+import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Status;
 import org.cnt.appointmentmanagementtest.appointment.service.AppointmentService;
 import org.cnt.appointmentmanagementtest.common.annotations.DefaultPageable;
 import org.cnt.appointmentmanagementtest.common.mail.CustomEmailService;
@@ -83,7 +84,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/count/{status}")
-    public ResponseEntity<Long> countAppointmentsByStatus(@PathVariable("status") String status) {
+    public ResponseEntity<Long> countAppointmentsByStatus(@PathVariable("status") Status status) {
         return ResponseEntity.ok(appointmentService.countAppointmentsByStatus(status));
     }
 

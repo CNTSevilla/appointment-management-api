@@ -9,6 +9,9 @@ import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointme
 import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +24,8 @@ public class PersonInNeed {
 
     @Id
     @GeneratedValue
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(length = 36, nullable = false, updatable = false)
     private UUID id;
     private String name;
     private String phone;

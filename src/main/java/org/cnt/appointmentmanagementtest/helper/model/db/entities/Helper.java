@@ -5,7 +5,9 @@ import lombok.*;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Appointment;
 import org.cnt.appointmentmanagementtest.appointment.model.db.entities.Comment;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +28,8 @@ public class Helper implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(length = 36, nullable = false, updatable = false)
     private UUID id;
 
     private String username;

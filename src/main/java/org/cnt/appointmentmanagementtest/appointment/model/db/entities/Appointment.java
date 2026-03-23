@@ -6,6 +6,9 @@ import org.cnt.appointmentmanagementtest.helper.model.db.entities.Helper;
 import org.cnt.appointmentmanagementtest.person_in_need.model.db.entities.PersonInNeed;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +21,8 @@ public final class Appointment {
 
     @Id
     @GeneratedValue
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(length = 36, nullable = false, updatable = false)
     private UUID id;
 
     private ZonedDateTime dateTime;
