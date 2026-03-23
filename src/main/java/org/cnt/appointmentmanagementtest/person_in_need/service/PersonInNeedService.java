@@ -32,6 +32,7 @@ public class PersonInNeedService {
         return people
                 .map(person ->
                         new PersonInNeedSimpleDTO(
+                            person.getId(),
                             person.getName(),
                             person.getPhone(),
                             person.getEmail(),
